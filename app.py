@@ -3,6 +3,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler, FileSystemEvent
 import time
 from bs4 import BeautifulSoup
+import json
 
 class InvoiceEventHandler(FileSystemEventHandler):
     """This function handles the invoice events"""
@@ -68,8 +69,20 @@ def parse_invoice(invoice_path):
     except Exception as e:
         print(f"Error parsing the XML file: {invoice_path} {e}")
 
+def load_budget_limits():
+    budget_limits_file_path = 'ExpenseAlert/budget_limits.json'
+    try:
+        with open(budget_limits_file_path) as file:
+            data = json.load(file)
+            return data
+    except Exception as e:
+        print(f"Error reading the errors from: {budget_limits_file_path} {e}")
+
 if __name__ == "__main__":
 
-    invoices_directory = read_dir_path()
+    #invoices_directory = read_dir_path()
 
-    monitor_directory(invoices_directory)
+    #monitor_directory(invoices_directory)
+
+    budget_limits = load_budget_limits()
+    print(budget_limits)

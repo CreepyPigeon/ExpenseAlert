@@ -5,6 +5,8 @@ import time
 from bs4 import BeautifulSoup
 import json
 from db import initialize_database, sync_budget_limits_to_db, save_invoice_to_db, check_budget_from_db
+import tkinter as tk
+from tkinter import messagebox
 
 class InvoiceEventHandler(FileSystemEventHandler):
     """This function handles the invoice events"""
@@ -20,6 +22,7 @@ class InvoiceEventHandler(FileSystemEventHandler):
             alert_message = check_budget_from_db(invoice_data['category'])
             if alert_message:
                 print(alert_message)
+                messagebox.showwarning("ALERT", alert_message)
 
 
 

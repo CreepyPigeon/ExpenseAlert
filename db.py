@@ -70,3 +70,36 @@ def save_invoice_to_db(invoice_data):
         print(f"Error saving invoice{invoice_data['id']}: {e}")
     finally:
         conn.close()
+
+
+def check_budget_from_db(category):
+    """Checks if the total spending for a category exceeds the budget limit."""
+    try:
+        
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+
+        cursor.execute('''
+            SELECT SUM(amount) 
+            FROM invoices 
+            WHERE category = ?
+        ''', (category,))
+        total_spent = cursor.fetchone()[0]
+
+        cursor.execute('''
+            SELECT budget_limit 
+            FROM categories 
+            WHERE category = ?
+        ''', (category,))
+        budget_limit = cursor.fetchone()[0]
+        if total_spent > budget_limit:
+            alert_message = (
+                f"ALERT: Total spending in category '{category}' "
+                f"({total_spent:.2f}) exceeds the budget limit of {budget_limit:.2f}."
+            )
+            return alert_message
+        return None
+    except Exception as e:
+        print(f"Error checking budget: {e}")
+    finally:
+        conn.close()

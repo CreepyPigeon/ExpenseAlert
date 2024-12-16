@@ -4,7 +4,7 @@ from watchdog.events import FileSystemEventHandler, FileSystemEvent
 import time
 from bs4 import BeautifulSoup
 import json
-from db import initialize_database, sync_budget_limits_to_db, save_invoice_to_db
+from db import initialize_database, sync_budget_limits_to_db, save_invoice_to_db, check_budget_from_db
 
 class InvoiceEventHandler(FileSystemEventHandler):
     """This function handles the invoice events"""
@@ -16,6 +16,11 @@ class InvoiceEventHandler(FileSystemEventHandler):
             invoice_data = parse_invoice(event.src_path)
             print(f"Data from the invoice {event.src_path}: {invoice_data}")
             save_invoice_to_db(invoice_data)
+
+            alert_message = check_budget_from_db(invoice_data['category'])
+            if alert_message:
+                print(alert_message)
+
 
 
 

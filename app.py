@@ -4,15 +4,19 @@ from watchdog.events import FileSystemEventHandler, FileSystemEvent
 import time
 from bs4 import BeautifulSoup
 import json
-from db import initialize_database, sync_budget_limits_to_db
+from db import initialize_database, sync_budget_limits_to_db, save_invoice_to_db
 
 class InvoiceEventHandler(FileSystemEventHandler):
     """This function handles the invoice events"""
     def on_created(self, event):
         if not event.is_directory and (event.src_path.endswith('.xml')):
             print(f"New invoice detected: {event.src_path}")
+
+            time.sleep(0.5)  
             invoice_data = parse_invoice(event.src_path)
             print(f"Data from the invoice {event.src_path}: {invoice_data}")
+            save_invoice_to_db(invoice_data)
+
 
 
 def read_dir_path():
@@ -82,11 +86,10 @@ def load_budget_limits():
 if __name__ == "__main__":
 
     #invoices_directory = read_dir_path()
+    invoices_directory = 'ExpenseAlert/Facturi'
+    monitor_directory(invoices_directory)
 
-    #monitor_directory(invoices_directory)
+    #budget_limits = load_budget_limits()
 
-    budget_limits = load_budget_limits()
-    print(budget_limits)
-
-    initialize_database()
-    sync_budget_limits_to_db(budget_limits)
+    #initialize_database()
+    #sync_budget_limits_to_db(budget_limits)

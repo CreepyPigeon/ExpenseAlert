@@ -1,4 +1,5 @@
 import sqlite3
+import logging
 
 DB_PATH = "ExpenseAlert/expenses.db"
 
@@ -28,8 +29,10 @@ def initialize_database():
 
         conn.commit()
         print("Database initialized successfully.")
+        logging.info("Database initialized successfully.")
     except Exception as e:
         print(f"Error initializing database: {e}")
+        logging.error(f"Error initializing database: {e}", exc_info=True)
     finally:
         conn.close()
 
@@ -47,8 +50,10 @@ def sync_budget_limits_to_db(limits):
             ''', (category, limit))
 
         conn.commit()
+        logging.info("Budget limits synchronized")
         print("Budget limits synchronized.")
     except Exception as e:
+        logging.error(f"Error syncing budget limits: {e}", exc_info=True)
         print(f"Error syncing budget limits: {e}")
     finally:
         conn.close()
@@ -65,9 +70,11 @@ def save_invoice_to_db(invoice_data):
         ''', (invoice_data['id'], invoice_data['date'], invoice_data['amount'], invoice_data['category']))
 
         conn.commit()
+        logging.info(f"Invoice {invoice_data['id']} saved successfully in category '{invoice_data['category']}'.")
         print(f"Invoice {invoice_data['id']} saved successfully.")
     except Exception as e:
         print(f"Error saving invoice{invoice_data['id']}: {e}")
+        logging.error(f"Error saving invoice {invoice_data['id']}: {e}", exc_info=True)
     finally:
         conn.close()
 
@@ -97,9 +104,12 @@ def check_budget_from_db(category):
                 f"ALERT: Total spending in category '{category}' "
                 f"({total_spent:.2f}) exceeds the budget limit of {budget_limit:.2f}."
             )
+            logging.warning(alert_message)
             return alert_message
+
         return None
     except Exception as e:
         print(f"Error checking budget: {e}")
+        logging.error(f"Error checking budget: {e}", exc_info=True)
     finally:
         conn.close()

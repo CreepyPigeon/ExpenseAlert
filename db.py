@@ -5,7 +5,47 @@ DB_PATH = "ExpenseAlert/expenses.db"
 
 def categorize_miscellaneous_expenses():
     """Categorize expenses initially put in the miscellaneous category"""
-    pass
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+
+        cursor.execute('''
+            SELECT id, invoice_id, date, amount
+            FROM invoices
+            WHERE category = "Miscellaneous"
+        ''')
+        miscellaneous_expenses = cursor.fetchall()
+
+        if not miscellaneous_expenses:
+            print("Nothing in the Miscellaneous category")
+            return
+
+        print("\nMiscellaneous expenses:")
+        for index, (expense_id, invoice_id, date, amount) in enumerate(miscellaneous_expenses, start=1):
+            print(f"{index}. ID: {invoice_id}, Date: {date}, Amount: {amount:.2f}")
+
+        choice = int(input("\nSelect the index of the expense you want to recategorize (press 0 to exit): "))
+        if choice == 0:
+            return
+
+        selected_expense = miscellaneous_expenses[choice - 1]
+        expense_id = selected_expense[0]
+
+        new_category = input("Type the new category: ")
+
+        cursor.execute('''
+            UPDATE invoices
+            SET category = ?
+            WHERE id = ?
+        ''', (new_category, expense_id))
+        conn.commit()
+        print(f"Category successfully updated for expense id = {expense_id}")
+        logging.info(f"Category successfully updated for expense id = {expense_id}")
+    except Exception as e:
+        print(f"Error changing category for expense id = {expense_id}: {e}")
+        logging.error(f"Error changing category for expense id = {expense_id}: {e}")
+    finally:
+        conn.close()
 
 
 def initialize_database():

@@ -127,7 +127,7 @@ if __name__ == "__main__":
 
     config_logging()
     logging.info("App started.")
-
+    invoices_directory = 'ExpenseAlert/Facturi'
     while True:
         display_menu()
         choice = input("Select an option: ")
@@ -142,8 +142,7 @@ if __name__ == "__main__":
             budget_limits = load_budget_limits()
             sync_budget_limits_to_db(budget_limits)
         elif choice == "0":
-            print("La revedere!")
+            print("Exit")
             break
         else:
             print("Invalid option. Try again.")
-    #invoices_directory = 'ExpenseAlert/Facturi'

@@ -3,6 +3,11 @@ import logging
 
 DB_PATH = "ExpenseAlert/expenses.db"
 
+def categorize_miscellaneous_expenses():
+    """Categorize expenses initially put in the miscellaneous category"""
+    pass
+
+
 def initialize_database():
     """Creates the tables in the database if they don't already exist."""
     try:

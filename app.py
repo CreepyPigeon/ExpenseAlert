@@ -4,7 +4,7 @@ from watchdog.events import FileSystemEventHandler, FileSystemEvent
 import time
 from bs4 import BeautifulSoup
 import json
-from db import initialize_database, sync_budget_limits_to_db, save_invoice_to_db, check_budget_from_db
+from db import initialize_database, sync_budget_limits_to_db, save_invoice_to_db, check_budget_from_db, categorize_miscellaneous_expenses
 import tkinter as tk
 from tkinter import messagebox
 import logging
@@ -113,17 +113,37 @@ def config_logging():
     except Exception as e:
         print("Error trying to configure logging")
 
+def display_menu():
+    """Show main menu to select operation"""
+    print("\n=== Expense Alert ===")
+    print("1. Choose directory path to monitor")
+    print("2. Monitor the directory")
+    print("3. Categorize miscellaneous invoices")
+    print ("4. Initialize database")
+    print("0. Exit")
+
 if __name__ == "__main__":
 
 
     config_logging()
     logging.info("App started.")
 
-    #invoices_directory = read_dir_path()
-    invoices_directory = 'ExpenseAlert/Facturi'
-    monitor_directory(invoices_directory)
-
-    #budget_limits = load_budget_limits()
-
-    #initialize_database()
-    #sync_budget_limits_to_db(budget_limits)
+    while True:
+        display_menu()
+        choice = input("Select an option: ")
+        if choice == "1":
+            invoices_directory = read_dir_path()
+        elif choice == "2":
+            monitor_directory(invoices_directory)
+        elif choice == "3":
+            categorize_miscellaneous_expenses()
+        elif choice == "4":
+            initialize_database()
+            budget_limits = load_budget_limits()
+            sync_budget_limits_to_db(budget_limits)
+        elif choice == "0":
+            print("La revedere!")
+            break
+        else:
+            print("Invalid option. Try again.")
+    #invoices_directory = 'ExpenseAlert/Facturi'

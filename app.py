@@ -4,7 +4,7 @@ from watchdog.events import FileSystemEventHandler, FileSystemEvent
 import time
 from bs4 import BeautifulSoup
 import json
-from db import initialize_database, sync_budget_limits_to_db, save_invoice_to_db, check_budget_from_db, categorize_miscellaneous_expenses
+from db import initialize_database, sync_budget_limits_to_db, save_invoice_to_db, check_budget_from_db, categorize_miscellaneous_expenses, is_category_real
 import tkinter as tk
 from tkinter import messagebox
 import logging
@@ -18,6 +18,11 @@ class InvoiceEventHandler(FileSystemEventHandler):
 
             time.sleep(0.5)  
             invoice_data = parse_invoice(event.src_path)
+            if is_category_real(invoice_data['category']) == False:
+                invoice_data['category'] = "Miscellaneous"
+                print(f"Category not recognized. Labeled as Miscellaneous")
+                logging.info(f"Category not recognized. Labeled as Miscellaneous")
+
             print(f"Data from the invoice {event.src_path}: {invoice_data}")
             save_invoice_to_db(invoice_data)
 
@@ -25,8 +30,6 @@ class InvoiceEventHandler(FileSystemEventHandler):
             if alert_message:
                 print(alert_message)
                 messagebox.showwarning("ALERT", alert_message)
-
-
 
 
 def read_dir_path():

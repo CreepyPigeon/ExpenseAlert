@@ -3,6 +3,24 @@ import logging
 
 DB_PATH = "ExpenseAlert/expenses.db"
 
+def is_category_real(category):
+    """Returns True if the category has a limit set in the database"""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT id, category, budget_limit
+        FROM categories
+        WHERE category = ?
+        ''', (category,))
+    limit = cursor.fetchall()
+
+    if not limit:
+        print("Category not recognized")
+        conn.close()
+        return False
+    conn.close()
+    return True
+
 def categorize_miscellaneous_expenses():
     """Categorize expenses initially put in the miscellaneous category"""
     try:
@@ -26,6 +44,7 @@ def categorize_miscellaneous_expenses():
 
         choice = int(input("\nSelect the index of the expense you want to recategorize (press 0 to exit): "))
         if choice == 0:
+            conn.close()
             return
 
         selected_expense = miscellaneous_expenses[choice - 1]
